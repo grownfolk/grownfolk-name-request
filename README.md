@@ -1,54 +1,40 @@
-# .grownfolk Name Request System
+# Grownfolk Name Request
 
-A mobile-optimized Web3 request form to reserve and approve your `.grownfolk` name.
+This repo powers the official .grownfolk name request form.
 
----
-
-## ✅ Live System URL  
-[https://grownfolk.github.io/grownfolk-name-request/](https://grownfolk.github.io/grownfolk-name-request/) *(update with actual link after publish)*
+Built to collect verified wallet addresses, emails, and ZIP codes as part of the Grown Folk identity system. All requests are reviewed manually before any name is registered on-chain.
 
 ---
 
-## ✅ Features
+## ✅ What It Does
 
-- **Wallet Integration**  
-  - Connect with **MetaMask** or **WalletConnect**  
-  - Auto-detects mobile users and deep links into MetaMask app
-
-- **Form Inputs**  
-  - .grownfolk name  
-  - Email address  
-  - ZIP code  
-  - Wallet auto-filled after connect
-
-- **Polished UX**  
-  - Mobile-first layout  
-  - Grown Folk colors + animations  
-  - Clean, centered form block
-
-- **Email Workflow**  
-  - Submits requests via Formspree to `@grownfolk.org`
+- Captures wallet address via **MetaMask** or **WalletConnect**
+- Submits desired `.grownfolk` name, email, and ZIP
+- Sends data to Formspree for manual approval
+- Supports **mobile deep linking** and **desktop QR scan**
+- Protects identity system by avoiding auto-claim
 
 ---
 
-## 🛠 Tech Stack
+## 🛠 Tech
 
-- HTML / CSS / JS
-- WalletConnect / MetaMask
-- Formspree endpoint
-- ScrollReveal animation
-
----
-
-## Planned Additions
-
-- On-chain name validation  
-- Admin approval flow  
-- Wallet creation onboarding  
-- Smart contract sync with [`grownfolk-resolver`](https://github.com/grownfolk/grownfolk-resolver)
+- HTML, CSS, JavaScript (vanilla)
+- WalletConnect v1 + MetaMask deep link
+- Polygon network RPC
+- ScrollReveal animations
+- GitHub Pages hosting
 
 ---
 
-## License
+## 🌐 Deployed At
 
-MIT — Built for Grown Folk United.
+- [https://grownfolk.github.io/grownfolk-name-request](https://grownfolk.github.io/grownfolk-name-request)
+- Final name registry stored and verified through GrownfolkResolver
+
+---
+
+## Notes
+
+All `.grownfolk` name requests are approved manually.  
+No on-chain writes happen directly from this page.  
+Smart contract address: `0x68dec9ce94a9a462c092f3f4fb56977698bbf0ab` (Polygon)

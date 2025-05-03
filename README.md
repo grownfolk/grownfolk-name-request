@@ -1,33 +1,54 @@
-# grownfolk-name-request (Mobile Optimized)
+# .grownfolk Name Request System
 
-This is the advanced Web3-native name request form for `.grownfolk` digital identity registration.
-
-## Features
-- **MetaMask (Recommended):** Desktop-first with one-click wallet connection
-- **WalletConnect with Deep Linking:** Automatically detects mobile users and opens wallet app (Trust, Coinbase, MetaMask Mobile, etc.)
-- **Secure form submission** for:
-  - .grownfolk name
-  - email
-  - ZIP code
-- **Wallet required** — no manual address entry allowed
-
-## Live Demo (example)
-Deploy this on GitHub Pages or Fleek:
-```
-https://grownfolk.github.io/grownfolk-name-request/
-```
-
-## How It Works
-1. User clicks **Connect with MetaMask** (desktop) or **WalletConnect** (mobile)
-2. Wallet address is auto-filled into a hidden form field
-3. User completes name + email + ZIP
-4. Submission goes to Grown Folk admin via [Formspree](https://formspree.io)
-
-## Smart Design
-- **On Desktop:** WalletConnect shows a QR code for scanning
-- **On Mobile:** QR is disabled — launches wallet apps directly
-- **Fallback Link:** “Create a Wallet” via MetaMask download if needed
+A mobile-optimized Web3 request form to reserve and approve your `.grownfolk` name.
 
 ---
 
-Built for the future of verified identity in the Grown Folk Network.
+## ✅ Live System URL  
+[https://grownfolk.github.io/grownfolk-name-request/](https://grownfolk.github.io/grownfolk-name-request/) *(update with actual link after publish)*
+
+---
+
+## ✅ Features
+
+- **Wallet Integration**  
+  - Connect with **MetaMask** or **WalletConnect**  
+  - Auto-detects mobile users and deep links into MetaMask app
+
+- **Form Inputs**  
+  - .grownfolk name  
+  - Email address  
+  - ZIP code  
+  - Wallet auto-filled after connect
+
+- **Polished UX**  
+  - Mobile-first layout  
+  - Grown Folk colors + animations  
+  - Clean, centered form block
+
+- **Email Workflow**  
+  - Submits requests via Formspree to `@grownfolk.org`
+
+---
+
+## 🛠 Tech Stack
+
+- HTML / CSS / JS
+- WalletConnect / MetaMask
+- Formspree endpoint
+- ScrollReveal animation
+
+---
+
+## Planned Additions
+
+- On-chain name validation  
+- Admin approval flow  
+- Wallet creation onboarding  
+- Smart contract sync with [`grownfolk-resolver`](https://github.com/grownfolk/grownfolk-resolver)
+
+---
+
+## License
+
+MIT — Built for Grown Folk United.

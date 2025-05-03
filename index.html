@@ -2,11 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Request Your .grownfolk Name</title>
   <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
-  <script src="https://unpkg.com/scrollreveal"></script>
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -17,56 +16,64 @@
     }
 
     .form-container {
-      background: #ffffff;
+      background: #fff;
       padding: 40px 30px;
       max-width: 640px;
       margin: auto;
       border-radius: 10px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
     }
 
     h1 {
       text-align: center;
-      color: #00274D;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
 
-    input, button {
+    .wallet-btns button, input, form button {
       width: 100%;
-      font-size: 16px;
       padding: 12px;
       margin-top: 12px;
-      border: 1px solid #ccc;
       border-radius: 6px;
-    }
-
-    button {
-      background: #00274D;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
+      font-size: 16px;
     }
 
     .wallet-btns button {
-      margin-bottom: 10px;
       background: #d32f2f;
+      color: white;
+      border: none;
     }
 
-    #walletDisplay {
+    input {
+      border: 1px solid #ccc;
+    }
+
+    form button {
+      background: #00274D;
+      color: white;
+      border: none;
       font-weight: bold;
-      margin: 12px 0;
     }
 
-    .create-wallet {
-      font-size: 14px;
+    .feedback {
+      color: red;
+      margin-top: 8px;
+    }
+
+    .thank-you {
+      display: none;
       text-align: center;
-      margin-top: 20px;
+      padding: 20px;
+    }
+
+    #namePreview {
+      font-weight: bold;
+      margin-top: 10px;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <div class="form-container reveal-fade">
+  <div class="form-container" id="formWrap">
     <h1>Request Your .grownfolk Name</h1>
 
     <div class="wallet-btns">
@@ -75,42 +82,42 @@
     </div>
 
     <div id="walletDisplay"></div>
+    <div id="namePreview"></div>
+    <div class="feedback" id="feedback"></div>
 
-    <form action="https://formspree.io/f/mwkgbryk" method="POST" onsubmit="return validateForm()">
+    <form id="nameForm" onsubmit="return validateForm()" method="POST" action="https://formspree.io/f/mwkgbryk">
       <input type="hidden" name="wallet" id="walletField" required />
-      <input type="text" name="name" placeholder="Desired .grownfolk name" required />
+      <input type="text" name="name" id="nameInput" placeholder="Desired .grownfolk name" required />
       <input type="email" name="email" placeholder="Your email" required />
       <input type="text" name="zip" placeholder="ZIP code" required />
-      <button type="submit">Submit Request</button>
+      <button type="submit" id="submitBtn" disabled>Submit Request</button>
     </form>
+  </div>
 
-    <div class="create-wallet">
-      Don’t have a wallet? <a href="https://metamask.io/download.html" target="_blank">Create one with MetaMask</a>
-    </div>
-
-    <div id="result"></div>
+  <div class="thank-you" id="thankYouMsg">
+    <h2>You're all set.</h2>
+    <p>Your <strong>.grownfolk</strong> name request has been received.</p>
+    <p>Log in or visit your profile at <a href="https://grownfolk.us" target="_blank">GrownFolk.us</a> to rep your name across the network.</p>
   </div>
 
   <script>
+    const contractAddress = "0x68dec9ce94a9a462c092f3f4fb56977698bbf0ab"; // your deployed contract
+    const contractABI = [{"inputs":[{"internalType":"string","name":"name","type":"string"}],"name":"nameExists","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}];
+
+    let web3;
     let userWallet = "";
 
-    function isMobileDevice() {
-      return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    }
-
     async function connectMetaMask() {
-      if (isMobileDevice()) {
-        window.location.href = 'https://metamask.app.link/dapp/grownfolk.github.io/grownfolk-name-request/';
-        return;
-      }
       if (window.ethereum) {
         try {
-          const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+          await window.ethereum.request({ method: "eth_requestAccounts" });
+          web3 = new Web3(window.ethereum);
+          const accounts = await web3.eth.getAccounts();
           userWallet = accounts[0];
           document.getElementById("walletDisplay").innerText = "Connected: " + userWallet;
           document.getElementById("walletField").value = userWallet;
         } catch {
-          document.getElementById("result").innerText = "MetaMask connection failed.";
+          alert("MetaMask connection failed.");
         }
       } else {
         alert("MetaMask not detected.");
@@ -123,34 +130,55 @@
           rpc: { 137: "https://polygon-rpc.com" },
           qrcode: true
         });
-
         await provider.enable();
-        const web3 = new Web3(provider);
+        web3 = new Web3(provider);
         const accounts = await web3.eth.getAccounts();
         userWallet = accounts[0];
         document.getElementById("walletDisplay").innerText = "Connected: " + userWallet;
         document.getElementById("walletField").value = userWallet;
-      } catch (err) {
-        document.getElementById("result").innerText = "WalletConnect failed.";
+      } catch {
+        alert("WalletConnect failed.");
       }
     }
 
-    function validateForm() {
-      const wallet = document.getElementById("walletField").value;
-      if (!wallet) {
-        alert("Please connect your wallet before submitting.");
+    async function checkNameAvailability(name) {
+      if (!web3) {
+        document.getElementById("feedback").innerText = "Please connect your wallet first.";
         return false;
       }
-      return true;
+
+      const contract = new web3.eth.Contract(contractABI, contractAddress);
+      const exists = await contract.methods.nameExists(name.toLowerCase()).call();
+      return !exists;
     }
 
-    ScrollReveal().reveal('.reveal-fade', {
-      duration: 700,
-      distance: '20px',
-      origin: 'bottom',
-      easing: 'ease-in-out',
-      reset: false
+    document.getElementById("nameInput").addEventListener("input", async function () {
+      const name = this.value.trim().toLowerCase().replace(/\s+/g, '');
+      document.getElementById("namePreview").innerText = name ? `Your tag: ${name}.grownfolk` : "";
+      if (name.length < 3) {
+        document.getElementById("feedback").innerText = "Name must be at least 3 characters.";
+        document.getElementById("submitBtn").disabled = true;
+        return;
+      }
+      const available = await checkNameAvailability(name);
+      if (available) {
+        document.getElementById("feedback").innerText = "";
+        document.getElementById("submitBtn").disabled = false;
+      } else {
+        document.getElementById("feedback").innerText = "This name is already taken.";
+        document.getElementById("submitBtn").disabled = true;
+      }
     });
+
+    function validateForm() {
+      if (!userWallet) {
+        alert("Please connect your wallet first.");
+        return false;
+      }
+      document.getElementById("formWrap").style.display = "none";
+      document.getElementById("thankYouMsg").style.display = "block";
+      return true;
+    }
   </script>
 </body>
 </html>

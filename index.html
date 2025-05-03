@@ -3,46 +3,85 @@
 <head>
   <title>Request a .grownfolk Name</title>
   <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
   <style>
-    body { font-family: Arial; padding: 40px; max-width: 600px; margin: auto; }
+    body { font-family: Arial; padding: 40px; max-width: 640px; margin: auto; }
     input, button { font-size: 18px; padding: 10px; width: 100%; margin-top: 12px; }
-    h2 { margin-top: 40px; }
+    .wallet-btns { margin-bottom: 20px; }
+    .wallet-btns button { width: 100%; margin-bottom: 10px; }
+    #walletDisplay { margin: 12px 0; font-weight: bold; }
     #result { margin-top: 20px; font-weight: bold; }
+    .create-wallet, .alt-wallets { font-size: 14px; text-align: center; margin-top: 16px; }
   </style>
 </head>
 <body>
   <h1>Request Your .grownfolk Name</h1>
 
-  <form action="https://formspree.io/f/mwkgbryk" method="POST">
-    <button type="button" onclick="connectWallet()">Connect Wallet</button>
-    <div id="walletDisplay" style="margin: 12px 0; font-weight: bold;"></div>
+  <div class="wallet-btns">
+    <button onclick="connectMetaMask()">Connect with MetaMask (Recommended)</button>
+    <div class="alt-wallets">
+      <em>Using Trust Wallet, Coinbase, or another wallet?</em><br/>
+      <button onclick="connectWalletConnect()">Connect with WalletConnect</button>
+    </div>
+  </div>
 
-    <input type="hidden" name="wallet" id="walletField" />
+  <div id="walletDisplay"></div>
 
+  <form action="https://formspree.io/f/mwkgbryk" method="POST" onsubmit="return validateForm()">
+    <input type="hidden" name="wallet" id="walletField" required />
     <input type="text" name="name" placeholder="Desired .grownfolk name" required />
     <input type="email" name="email" placeholder="Your email" required />
     <input type="text" name="zip" placeholder="ZIP code" required />
     <button type="submit">Submit Request</button>
   </form>
 
+  <div class="create-wallet">
+    Don't have a wallet? <a href="https://metamask.io/download.html" target="_blank">Create one with MetaMask</a>
+  </div>
+
   <div id="result"></div>
 
   <script>
     let userWallet = "";
 
-    async function connectWallet() {
+    async function connectMetaMask() {
       if (window.ethereum) {
         try {
           const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
           userWallet = accounts[0];
-          document.getElementById("walletDisplay").innerText = "Connected Wallet: " + userWallet;
+          document.getElementById("walletDisplay").innerText = "Connected via MetaMask: " + userWallet;
           document.getElementById("walletField").value = userWallet;
         } catch (error) {
-          document.getElementById("result").innerText = "Wallet connection failed.";
+          document.getElementById("result").innerText = "MetaMask connection failed.";
         }
       } else {
         alert("MetaMask not detected.");
       }
+    }
+
+    async function connectWalletConnect() {
+      const provider = new WalletConnectProvider.default({
+        rpc: { 137: "https://polygon-rpc.com" }
+      });
+      try {
+        await provider.enable();
+        const web3 = new Web3(provider);
+        const accounts = await web3.eth.getAccounts();
+        userWallet = accounts[0];
+        document.getElementById("walletDisplay").innerText = "Connected via WalletConnect: " + userWallet;
+        document.getElementById("walletField").value = userWallet;
+      } catch (error) {
+        document.getElementById("result").innerText = "WalletConnect failed.";
+      }
+    }
+
+    function validateForm() {
+      const wallet = document.getElementById("walletField").value;
+      if (!wallet) {
+        alert("Please connect your wallet before submitting.");
+        return false;
+      }
+      return true;
     }
   </script>
 </body>

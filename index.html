@@ -63,13 +63,6 @@
       text-align: center;
       margin-top: 20px;
     }
-
-    .alt-wallets {
-      text-align: center;
-      font-size: 13px;
-      color: #555;
-      margin-top: 5px;
-    }
   </style>
 </head>
 <body>
@@ -78,10 +71,7 @@
 
     <div class="wallet-btns">
       <button onclick="connectMetaMask()">Connect with MetaMask</button>
-      <div class="alt-wallets">
-        Using Trust, Coinbase, or another wallet?
-        <a href="https://walletconnect.com/wallets" target="_blank">View Compatible Wallets</a>
-      </div>
+      <button onclick="connectWalletConnect()">Connect with WalletConnect</button>
     </div>
 
     <div id="walletDisplay"></div>
@@ -110,7 +100,7 @@
 
     async function connectMetaMask() {
       if (isMobileDevice()) {
-        window.location.href = 'https://metamask.app.link/dapp/grownfolk.us/grownfolk-name-request/';
+        window.location.href = 'https://metamask.app.link/dapp/grownfolk.github.io/grownfolk-name-request/';
         return;
       }
       if (window.ethereum) {
@@ -124,6 +114,24 @@
         }
       } else {
         alert("MetaMask not detected.");
+      }
+    }
+
+    async function connectWalletConnect() {
+      try {
+        const provider = new WalletConnectProvider.default({
+          rpc: { 137: "https://polygon-rpc.com" },
+          qrcode: true
+        });
+
+        await provider.enable();
+        const web3 = new Web3(provider);
+        const accounts = await web3.eth.getAccounts();
+        userWallet = accounts[0];
+        document.getElementById("walletDisplay").innerText = "Connected: " + userWallet;
+        document.getElementById("walletField").value = userWallet;
+      } catch (err) {
+        document.getElementById("result").innerText = "WalletConnect failed.";
       }
     }
 

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Request a .grownfolk Name</title>
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
+  <style>
+    body { font-family: Arial; padding: 40px; max-width: 600px; margin: auto; }
+    input, button { font-size: 18px; padding: 10px; width: 100%; margin-top: 12px; }
+    h2 { margin-top: 40px; }
+    #result { margin-top: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Request Your .grownfolk Name</h1>
+
+  <form action="https://formspree.io/f/mwkgbryk" method="POST">
+    <button type="button" onclick="connectWallet()">Connect Wallet</button>
+    <div id="walletDisplay" style="margin: 12px 0; font-weight: bold;"></div>
+
+    <input type="hidden" name="wallet" id="walletField" />
+
+    <input type="text" name="name" placeholder="Desired .grownfolk name" required />
+    <input type="email" name="email" placeholder="Your email" required />
+    <input type="text" name="zip" placeholder="ZIP code" required />
+    <button type="submit">Submit Request</button>
+  </form>
+
+  <div id="result"></div>
+
+  <script>
+    let userWallet = "";
+
+    async function connectWallet() {
+      if (window.ethereum) {
+        try {
+          const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+          userWallet = accounts[0];
+          document.getElementById("walletDisplay").innerText = "Connected Wallet: " + userWallet;
+          document.getElementById("walletField").value = userWallet;
+        } catch (error) {
+          document.getElementById("result").innerText = "Wallet connection failed.";
+        }
+      } else {
+        alert("MetaMask not detected.");
+      }
+    }
+  </script>
+</body>
+</html>

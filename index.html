@@ -6,6 +6,7 @@
   <title>Request Your .grownfolk Name</title>
   <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+  <script src="https://unpkg.com/scrollreveal"></script>
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -16,12 +17,12 @@
     }
 
     .form-container {
-      background: #fff;
+      background: #ffffff;
       padding: 40px 30px;
       max-width: 640px;
       margin: auto;
       border-radius: 10px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     }
 
     h1 {
@@ -79,7 +80,7 @@
   </style>
 </head>
 <body>
-  <div class="form-container" id="formWrap">
+  <div class="form-container reveal-fade" id="formWrap">
     <h1>Request Your .grownfolk Name</h1>
 
     <div class="wallet-btns">
@@ -104,7 +105,7 @@
     </form>
   </div>
 
-  <div class="thank-you" id="thankYouMsg">
+  <div class="thank-you reveal-fade" id="thankYouMsg">
     <h2>You're all set.</h2>
     <p>Your <strong>.grownfolk</strong> name request has been received.</p>
     <p>Visit <a href="https://grownfolk.us" target="_blank">Grownfolk.us</a> to log in or rep your name across the network.</p>
@@ -124,6 +125,18 @@
     let userWallet = "";
     let provider;
 
+    async function autoDetectWallet() {
+      if (window.ethereum) {
+        web3 = new Web3(window.ethereum);
+        const accounts = await web3.eth.getAccounts();
+        if (accounts.length > 0) {
+          userWallet = accounts[0];
+          document.getElementById("walletDisplay").innerText = "Auto-connected: " + userWallet;
+          document.getElementById("walletField").value = userWallet;
+        }
+      }
+    }
+
     async function connectMetaMask() {
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         window.location.href = 'https://metamask.app.link/dapp/grownfolk.github.io/grownfolk-name-request/';
@@ -131,8 +144,8 @@
       }
       if (window.ethereum) {
         try {
-          web3 = new Web3(window.ethereum);
           const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+          web3 = new Web3(window.ethereum);
           userWallet = accounts[0];
           document.getElementById("walletDisplay").innerText = "Connected: " + userWallet;
           document.getElementById("walletField").value = userWallet;
@@ -163,12 +176,12 @@
 
     async function checkNameAvailability(name) {
       try {
-        if (!web3 || !userWallet) return false;
+        if (!web3) return true; // allow checks before wallet
         const contract = new web3.eth.Contract(contractABI, contractAddress);
         const taken = await contract.methods.nameExists(name.toLowerCase()).call();
         return !taken;
       } catch {
-        return false;
+        return true; // fail-safe: assume available
       }
     }
 
@@ -176,6 +189,7 @@
       const raw = this.value.trim();
       const name = raw.toLowerCase().replace(/\s+/g, '');
       document.getElementById("namePreview").innerText = name ? `Your tag: ${name}.grownfolk` : "";
+
       if (name.length < 3) {
         document.getElementById("feedback").innerText = "Name must be at least 3 characters.";
         document.getElementById("submitBtn").disabled = true;
@@ -201,6 +215,16 @@
       document.getElementById("thankYouMsg").style.display = "block";
       return true;
     }
+
+    ScrollReveal().reveal('.reveal-fade', {
+      duration: 700,
+      distance: '20px',
+      origin: 'bottom',
+      easing: 'ease-in-out',
+      reset: false
+    });
+
+    window.onload = autoDetectWallet;
   </script>
 </body>
 </html>

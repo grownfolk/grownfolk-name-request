@@ -158,21 +158,23 @@
     }
 
     async function connectWalletConnect() {
-      try {
-        provider = new WalletConnectProvider.default({
-          rpc: { 137: "https://summer-omniscient-bush.matic.quiknode.pro/12ccb8b6f440bb8cca609715f48f3ea08e68199a/" },
-          qrcode: true
-        });
-        await provider.enable();
-        web3 = new Web3(provider);
-        const accounts = await web3.eth.getAccounts();
-        userWallet = accounts[0];
-        document.getElementById("walletDisplay").innerText = "Connected: " + userWallet;
-        document.getElementById("walletField").value = userWallet;
-      } catch {
-        alert("WalletConnect failed or was closed.");
-      }
-    }
+  try {
+    provider = new WalletConnectProvider.default({
+      rpc: {
+        137: "https://summer-omniscient-bush.matic.quiknode.pro/12ccb8b6f440bb8cca609715f48f3ea08e68199a/"
+      },
+      qrcode: true
+    });
+    await provider.enable();
+    web3 = new Web3(provider);
+    const accounts = await web3.eth.getAccounts();
+    userWallet = accounts[0];
+    document.getElementById("walletDisplay").innerText = "Connected: " + userWallet;
+    document.getElementById("walletField").value = userWallet;
+  } catch {
+    alert("WalletConnect failed or was closed.");
+  }
+}
 
     async function checkNameAvailability(name) {
       try {
